@@ -1,4 +1,4 @@
-export const MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2";
+export const MODEL_NAME = "Xenova/all-MiniLM-L6-v2";
 
 // The sentence-transformers/all-MiniLM-L6-v2 was trained at 256, even though
 // the underlying transformer 512.

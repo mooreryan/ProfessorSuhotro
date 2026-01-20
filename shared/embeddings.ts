@@ -23,10 +23,11 @@ export function getPipeline(
 
   const progress_callback = progress ? Progress.handleProgress : undefined;
 
-  // TS can't infer this type, so set a variable manually here.
   const tmp = Transformers.pipeline("feature-extraction", Constant.MODEL_NAME, {
     progress_callback,
-    dtype: "fp32",
+    // We want to use/download the quantized model, as it is much smaller, and
+    // still pretty good.
+    dtype: "uint8",
   });
 
   pipeline = tmp;
@@ -58,6 +59,8 @@ export async function extractFeatures(
   // readonly, so we copy it to be safe.
   const textsCopy = [...texts];
 
+  // NOTE: We are _not_ using quantization on the embeddings themselves as it
+  // breaks our matmul-based similarity math.
   return await featureExtractionPipeline(textsCopy, {
     // Average token embeddings
     pooling: "mean",
@@ -76,6 +79,7 @@ export async function extractFeaturesInBatches(
   for (let i = 0; i < texts.length; i += batchSize) {
     console.log(`Processing ${i} to ${i + batchSize}`);
     const batch = texts.slice(i, i + batchSize);
+    // See the note above about why we don't quantize here.
     const embeddings = await featureExtractionPipeline(batch, {
       pooling: "mean",
       normalize: true,
