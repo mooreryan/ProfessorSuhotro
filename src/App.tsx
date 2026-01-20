@@ -92,10 +92,10 @@ function Consent({ onConsent }: { onConsent: () => void }) {
       <IntroContent />
       <h2 className="font-bold">Before we begin</h2>
       <p className="mt-2">
-        To get started, we need to download a few search models (roughly 100
-        MB). If you are on a mobile device or have a slow connection, this could
-        take a few minutes. We’ll cache these files so you don't have to
-        download them again next time.
+        To get started, we need to download a few search models (roughly 35 MB).
+        If you are on a mobile device or have a slow connection, this could take
+        a few minutes. We’ll cache these files so you don't have to download
+        them again next time.
       </p>
       <p className="mt-2">
         Because the search runs entirely in your browser, your questions stay
@@ -105,6 +105,14 @@ function Consent({ onConsent }: { onConsent: () => void }) {
       <button className="btn btn-primary btn-block mt-2" onClick={onConsent}>
         Start App!
       </button>
+      <p className="mt-2 text-xs text-zinc-500">
+        <em>
+          Note: If you tried starting the app, but it crashed during the
+          "Initializing runtime" step, your device may be low on memory. Try
+          closing other apps and refreshing, or access this site from a desktop
+          computer.
+        </em>
+      </p>
     </div>
   );
 }
