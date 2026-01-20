@@ -205,7 +205,7 @@ function IntroContent() {
       </p>
       <p className="mb-2 text-xs text-zinc-500">
         I get my data from the book{" "}
-        <a className="link" href="https://www.appliedpythonprogramming.com/">
+        <a className="link" href="https://appliedpythonprogramming.com/">
           Applied Python Programming for Life Scientists
         </a>{" "}
         and from{" "}
