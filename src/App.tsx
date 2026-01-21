@@ -63,9 +63,17 @@ function fetchDb(
 }
 
 function App() {
+  const [showMemoryAlert, setShowMemoryAlert] = useState(true);
+
   const [hasConsented, setHasConsented] = useState(false);
   if (!hasConsented) {
-    return <Consent onConsent={() => setHasConsented(true)} />;
+    return (
+      <Consent
+        onConsent={() => setHasConsented(true)}
+        showMemoryAlert={showMemoryAlert}
+        setShowMemoryAlert={setShowMemoryAlert}
+      />
+    );
   }
 
   const dbObjectPromise = fetchDb(dbUrl);
@@ -76,7 +84,11 @@ function App() {
   if (Result.isOk(dbResult)) {
     return (
       <Suspense fallback={<Loading />}>
-        <ProfessorContent db={dbResult.value} />
+        <ProfessorContent
+          db={dbResult.value}
+          showMemoryAlert={showMemoryAlert}
+          setShowMemoryAlert={setShowMemoryAlert}
+        />
       </Suspense>
     );
   } else {
@@ -89,10 +101,21 @@ function App() {
   }
 }
 
-function Consent({ onConsent }: { onConsent: () => void }) {
+function Consent({
+  onConsent,
+  showMemoryAlert,
+  setShowMemoryAlert,
+}: {
+  onConsent: () => void;
+  showMemoryAlert: boolean;
+  setShowMemoryAlert: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
     <div>
-      <IntroContent />
+      <IntroContent
+        showMemoryAlert={showMemoryAlert}
+        setShowMemoryAlert={setShowMemoryAlert}
+      />
       <h2 className="font-bold">Before we begin</h2>
       <p className="mt-2">
         To get started, we need to download a few search models (roughly 35 MB).
@@ -125,7 +148,15 @@ type DataSources = {
   "The Python Tutorial": boolean;
 };
 
-function ProfessorContent({ db }: { db: ChunkDB.ChunkDatabase }) {
+function ProfessorContent({
+  db,
+  showMemoryAlert,
+  setShowMemoryAlert,
+}: {
+  db: ChunkDB.ChunkDatabase;
+  showMemoryAlert: boolean;
+  setShowMemoryAlert: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [searchResult, setSearchResult] = useState<
     Result.Result<ChunkDB.ChunkWithScore[], string> | undefined
   >(undefined);
@@ -169,7 +200,10 @@ function ProfessorContent({ db }: { db: ChunkDB.ChunkDatabase }) {
 
   return (
     <div className="">
-      <IntroContent />
+      <IntroContent
+        showMemoryAlert={showMemoryAlert}
+        setShowMemoryAlert={setShowMemoryAlert}
+      />
 
       <Instructions />
 
@@ -185,16 +219,13 @@ function ProfessorContent({ db }: { db: ChunkDB.ChunkDatabase }) {
   );
 }
 
-/*
-
-<div className="flex flex-row items-center justify-between mb-1">
-  <h1 className="text-2xl font-bold mb-2">Professor Suhotro</h1>
-  <img src="/little-suhotro.png" alt="Professor Suhotro" />
-</div>
-
-*/
-
-function IntroContent() {
+function IntroContent({
+  showMemoryAlert,
+  setShowMemoryAlert,
+}: {
+  showMemoryAlert: boolean;
+  setShowMemoryAlert: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-center mb-1">
@@ -210,6 +241,11 @@ function IntroContent() {
           Professor Suhotro
         </h1>
       </div>
+
+      {showMemoryAlert && (
+        <MemoryAlert onDismiss={() => setShowMemoryAlert(false)} />
+      )}
+
       <p className="mb-2">
         Hi! I'm Professor Suhotro, and I'm here to help you find answers to your
         Python questions!
@@ -228,6 +264,43 @@ function IntroContent() {
         </a>
         .
       </p>
+    </div>
+  );
+}
+
+function MemoryAlert({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="alert alert-warning mb-3">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
+      </svg>
+      <div>
+        <h3 className="font-bold">Important</h3>
+        <div className="text-xs">
+          This app performs semantic search locally in your browser, which
+          requires allocating a large amount of memory at startup. Mobile
+          browsers, such as Safari on iOS, enforce memory limits and may crash
+          or reload the page during “Initializing runtime.” For a stable
+          experience, please use a desktop or laptop computer.
+        </div>
+      </div>
+      <button
+        className="btn btn-sm btn-ghost btn-circle"
+        onClick={onDismiss}
+        aria-label="Dismiss alert"
+      >
+        ✕
+      </button>
     </div>
   );
 }
