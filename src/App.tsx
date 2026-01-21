@@ -19,7 +19,10 @@ function getHighlighter(): Promise<HighlighterCore> {
       import("@shikijs/themes/github-dark"),
     ],
     langs: [import("@shikijs/langs/markdown")],
-    engine: ShikiCore.createOnigurumaEngine(import("shiki/wasm")),
+    engine: ShikiCore.createJavaScriptRegexEngine({
+      target: "auto",
+      forgiving: true,
+    }),
   });
   highlighterCache = hl;
   return highlighterCache;
