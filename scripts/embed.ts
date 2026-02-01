@@ -187,7 +187,10 @@ function finalizeBasicChunk(
   const text = basicChunk.chunks.join("");
 
   return {
-    headingPath: ["The Python Tutorial"],
+    // In a basic chunk, we don't bother parsing out headings, so we won't have
+    // a good set of breadcrumbs to use as the heading path. Instead, just show
+    // the title of the document that the chunk is from.
+    headingPath: [title],
     totalTokens: basicChunk.totalTokens,
     rawText: text,
     markdownText: text,
